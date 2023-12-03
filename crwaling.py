@@ -51,6 +51,6 @@ class CRAWLING():
 if __name__ == "__main__":
     c = CRAWLING()
     c.main()
-    while True:
-        input_data = input("원하는 품종을 입력해 주세요. : ")
-        c.search(input_data)
+    #while True:    #반복문 사용하려면 input~~ 줄과 c.search~~줄을 while문에 맞출 것
+    input_data = input("원하는 품종을 입력해 주세요. : ")
+    c.search(input_data)
