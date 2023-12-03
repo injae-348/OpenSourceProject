@@ -238,6 +238,21 @@ def run(
     if update:
         strip_optimizer(weights[0])  # update model (to fix SourceChangeWarning)
 
+    #-------------------------------
+    # return 값을 주기 위한 변경
+    detected_objects = []
+
+    # 객체 감지 및 처리 로직
+    for i, det in enumerate(pred):  # per image
+        seen += 1
+
+        for *xyxy, conf, cls in reversed(det):
+            c = int(cls)
+            detected_class = names[c]  # 예측된 클래스 이름을 가져옴
+            # 클래스와 이미지 URL을 딕셔너리 형태로 추가
+            detected_objects.append(detected_class)
+    return detected_objects  # 객체 감지된 클래스와 이미지 URL을 포함한 리스트 반환
+
 
 def parse_opt():
     parser = argparse.ArgumentParser()
