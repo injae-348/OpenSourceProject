@@ -1,18 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Second Page</title>
 </head>
+
 <body>
     <!-- 업로드 받은 사진 표시 -->
-    <img src="{{ uploaded_image }}" alt="Uploaded Image" width="300">
+    <img src="{{ image_path }}" alt="Uploaded Image" width="300">
 
     <!-- 모델 결과 표시 -->
     <h2>예측 결과 : {{ detected_class }}</h2>
 
+    <!-- 품종 설명 -->
+    <p>품종에 대한 설명 DB에서 가져와서 넣어주기!</p>
+
+    <!-- 네이버 뉴스 헤드라인 표시 -->
+    <h3>네이버 뉴스 헤드라인 5가지!</h3>
+    <ul>
+        <li>제목 1</li>
+        <li>제목 2</li>
+        <li>제목 3</li>
+        <li>제목 4</li>
+        <li>제목 5</li>
+    </ul>
+
+    <!-- 음성 파일 재생 버튼 -->
+    <!-- 예시: 'audio' 태그를 사용하여 재생할 음성 파일의 경로를 지정하세요 -->
+    <h3>오디오 파일이 들어갈 곳!</h3>
 
     <!-- 첫 번째 페이지로 돌아가는 버튼 -->
     <a href="{% url 'first_page' %}">처음 페이지로</a>
 </body>
+
 </html>

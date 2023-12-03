@@ -1,5 +1,8 @@
+import os
+
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.conf import settings
 
 from .forms import PetImageForm
 
@@ -23,7 +26,10 @@ def first_page(request):
                 print("오류 발생:",e)
             
             # 객체 감지 결과를 session에 저장
-            request.session['detection_result'] = result
+            request.session['detection_result'] = {
+                'image_path':upload_image_path,
+                'detections':result,
+            }
 
             return redirect('second_page')
 
@@ -40,15 +46,19 @@ def second_page(request):
 
     print("객체 탐지 결과 : ",detection_result)
 
-    uploaded_image = detection_result[0]['image_url']
-    detected_class = detection_result[0]['class']
+    uploaded_image = detection_result['image_path']
+    detected_class = detection_result['detections'][0]
+
+    relative_path = uploaded_image.replace(settings.MEDIA_ROOT,'').replace('\\','/') 
+    # image_path = os.path.join(settings.MEDIA_URL,relative_path)
+    image_path = '/'.join([settings.MEDIA_URL.rstrip('/'), relative_path.lstrip('/')])
 
     # 품종에 대한 설명 만들어둔 DB에서 가져오기
 
     # 네이버 뉴스 헤드라인 가져오기
 
     context = {
-        'uploaded_image':uploaded_image,
+        'image_path':image_path,
         'detected_class':detected_class,
     }
 
