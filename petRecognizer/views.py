@@ -3,6 +3,7 @@ from django.http import HttpResponse
 
 from .forms import PetImageForm
 
+
 from yolov5.detect import run
 
 def first_page(request):
@@ -52,3 +53,4 @@ def second_page(request):
     }
 
     return render(request,'second.html',context)
+
