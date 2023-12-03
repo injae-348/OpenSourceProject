@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>궁금한 품종의 사진을 입력해주세요!<br>(고양이와 강아지 사진만 부탁드립니다!)</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <img id="preview_image" src="#" alt="Preview" style="display: none; max-width: 300px; max-height: 300px;">
+
+        <button type="submit">결과 확인</button>
+    </form>
+</body>
+<script>
+    function preview_image(event) {
+        var reader = new FileReader();
+        reader.onload = function () {
+            var output = document.getElementById('preview_image');
+            output.src = reader.result;
+            output.style.display = 'block';
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    document.getElementById('id_image').addEventListener('change', preview_image);
+</script>
+
+</html>

@@ -17,7 +17,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from django.conf.urls.static import static
+from django.conf import settings
+from .settings import MEDIA_URL, MEDIA_ROOT
+
+# MEDIA_URL로 들어오는 요청에 대해 MEDIA_ROOT 경로를 탐색한다.
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("",include('petRecognizer.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)
