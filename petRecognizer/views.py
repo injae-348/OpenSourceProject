@@ -46,12 +46,13 @@ def second_page(request):
     detection_result = request.session.get('detection_result')
 
     print("객체 탐지 결과 : ",detection_result)
-
-    uploaded_image = detection_result['image_path']
-    detected_class = detection_result['detections'][0]
-       
-    relative_path = uploaded_image.replace(settings.MEDIA_ROOT,'').replace('\\','/') 
+    try:
+        uploaded_image = detection_result['image_path']
+        detected_class = detection_result['detections'][0]
+    except:
+        return redirect('error_page')   
     
+    relative_path = uploaded_image.replace(settings.MEDIA_ROOT,'').replace('\\','/') 
     # image_path = os.path.join(settings.MEDIA_URL,relative_path)
     image_path = '/'.join([settings.MEDIA_URL.rstrip('/'), relative_path.lstrip('/')])  
     
