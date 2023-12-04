@@ -1,4 +1,5 @@
 import os
+import json
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -45,10 +46,21 @@ def second_page(request):
 
     detection_result = request.session.get('detection_result')
 
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    print(BASE_DIR)
+    json_file_path = os.path.join(BASE_DIR, 'class.json')
+    print(json_file_path)
+
+    with open(json_file_path,'r',encoding='utf-8') as json_file:
+        translated_classes = json.load(json_file)
+
+
     print("객체 탐지 결과 : ",detection_result)
     try:
         uploaded_image = detection_result['image_path']
         detected_class = detection_result['detections'][0]
+
+        detected_class_kor = translated_classes.get(detected_class,"번역할 수 없는 값")
     except:
         return redirect('error_page')   
     
@@ -61,7 +73,7 @@ def second_page(request):
     # 네이버 뉴스 헤드라인 가져오기
     context = {
          'image_path':image_path,
-         'detected_class':detected_class,
+         'detected_class':detected_class_kor,
     }
 
     return render(request,'second.html',context)
