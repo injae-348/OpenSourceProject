@@ -1,0 +1,23 @@
+ <!-- 모델 결과 표시 -->
+
+맨위 주석과 맨아래 주석 사이에 다음과 같은 내용 삽입 
+ 
+ <!-- 품종 설명 -->
+ <p>{{ breed_description.description }}</p>
+ 
+ <!-- 네이버 뉴스 헤드라인 표시 -->
+ <h3>News Headlines for {{ detected_class }}</h3>
+ <ul>
+     {% for headline in news_headlines %}
+     <li>{{ headline }}</li>
+     {% endfor %}
+    </ul>
+    
+    <!-- 음성 파일 재생 버튼 -->
+    <!-- 예시: 'audio' 태그를 사용하여 재생할 음성 파일의 경로를 지정하세요 -->
+    <audio controls>
+        <source src="/path/to/audio_file.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+<!-- 첫 번째 페이지로 돌아가는 버튼 -->
