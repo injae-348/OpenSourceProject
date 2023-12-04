@@ -10,46 +10,50 @@ from .forms import PetImageForm
 
 from yolov5.detect import run
 
+# 첫번째 페이지
 def first_page(request):
+    # POST 요청시(이미지를 올리고 결과 확인 버튼을 눌렀을 때)
     if request.method=='POST':
         form = PetImageForm(request.POST,request.FILES)
         if form.is_valid():
+            # 폼을 확인해서 이미지를 저장
             image_instance = form.save(commit=False)
             image_instance.save()
             
             # Image 업로드 후 YOLOV5 모델 여기서 적용!
             upload_image_path = image_instance.image.path
 
+            # yolov5s 에서 학습 시킨 가중치를 가지고 run 실행
             try:
                 result = run(weights='yolov5/runs/train/pet_yolov5s_results/weights/best.pt',source=upload_image_path,imgsz=(640,640),conf_thres=0.5)
                 print("result 결과 : ",result)
             except Exception as e:
                 print("오류 발생:",e)
             
-            # 객체 감지 결과를 session에 저장
+            # 객체 감지 결과 & 이미지 경로를 session에 저장
             request.session['detection_result'] = {
                 'image_path':upload_image_path,
                 'detections':result,
             }
 
+            # 두번째 페이지로 redirect(연결: url 창에 주소를 넣어준다고 생각하면됨)
             return redirect('second_page')
-
-            # 객체 감지 결과를 query 매개변수로 전달
-            # return redirect('second_page',detection_result=result)
     else:
+        # POST 요청이 아닐시 => 폼 양식 생성
         form = PetImageForm()
 
+    # render를 통해 first.html 템플릿을 생성
     return render(request,'first.html',{'form':form})
 
-
+# 두번째 페이지(결과 페이지)
 def second_page(request):
 
+    # 세션에 저장되어 있는 결과 & 이미지 경로를 가져옴
     detection_result = request.session.get('detection_result')
 
+    # class.json 파일을 읽어와 영어로 출력된 클래스 이름을 한국어로 변환
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    print(BASE_DIR)
     json_file_path = os.path.join(BASE_DIR, 'class.json')
-    print(json_file_path)
 
     with open(json_file_path,'r',encoding='utf-8') as json_file:
         translated_classes = json.load(json_file)
@@ -57,20 +61,27 @@ def second_page(request):
 
     print("객체 탐지 결과 : ",detection_result)
     try:
+        # 세션에 저장되어있던 이미지 경로
         uploaded_image = detection_result['image_path']
+        # 세션에 저장되어있던 클래스 영어 이름 결과
         detected_class = detection_result['detections'][0]
-
+        # 한국어로 변경한 값
         detected_class_kor = translated_classes.get(detected_class,"번역할 수 없는 값")
-    except:
+    except (KeyError, IndexError):
+        # 만약 에러가 발생시 에러 페이지로 redirect(연결)
         return redirect('error_page')   
     
     relative_path = uploaded_image.replace(settings.MEDIA_ROOT,'').replace('\\','/') 
-    # image_path = os.path.join(settings.MEDIA_URL,relative_path)
     image_path = '/'.join([settings.MEDIA_URL.rstrip('/'), relative_path.lstrip('/')])  
     
     # 품종에 대한 설명 만들어둔 DB에서 가져오기  
+
     
     # 네이버 뉴스 헤드라인 가져오기
+
+
+    # second.html 파일에서 사용할 정보 담아두는 객체
+    # 품종에 대한 설명, 뉴스 등도 여기에 추가
     context = {
          'image_path':image_path,
          'detected_class':detected_class_kor,
@@ -78,5 +89,6 @@ def second_page(request):
 
     return render(request,'second.html',context)
     
+# 에러 페이지
 def error_page(request):
     return render(request,'error.html')
