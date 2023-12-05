@@ -7,7 +7,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 
 
-class CRAWLING():
+class CRAWLING:
     def __init__(self) -> None:
         self.init_driver()
 
@@ -15,8 +15,7 @@ class CRAWLING():
         self.chrome_service = Service(ChromeDriverManager().install())
         self.driver = None
 
-
-    def main(self) :
+    def main(self):
         self.driver = webdriver.Chrome(service=self.chrome_service)
         self.driver.get("https://search.naver.com/search.naver?where=news&sm=tab_jum&query=%EC%A0%84%EB%82%A8%EB%8C%80")
        
@@ -45,6 +44,7 @@ class CRAWLING():
 
 
     
+
 
 
 
