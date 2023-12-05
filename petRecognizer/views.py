@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.conf import settings
 
 from .forms import PetImageForm
-
+from .models import PetBreed
 
 from yolov5.detect import run
 
@@ -75,8 +75,12 @@ def second_page(request):
     image_path = '/'.join([settings.MEDIA_URL.rstrip('/'), relative_path.lstrip('/')])  
     
     # 품종에 대한 설명 만들어둔 DB에서 가져오기  
+    try:
+        breed_object = PetBreed.objects.get(breed=detected_class)
+        detected_class_description = breed_object.description
+    except PetBreed.DoesNotExist:
+        detected_class_description = "설명이 없습니다."
 
-    
     # 네이버 뉴스 헤드라인 가져오기
 
 
@@ -85,6 +89,7 @@ def second_page(request):
     context = {
          'image_path':image_path,
          'detected_class':detected_class_kor,
+         'detected_class_description':detected_class_description,
     }
 
     return render(request,'second.html',context)
