@@ -1,8 +1,11 @@
 import os
 import json
+import subprocess
+import requests
+from bs4 import BeautifulSoup
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.conf import settings
 
 from .forms import PetImageForm
@@ -45,6 +48,37 @@ def first_page(request):
     # render를 통해 first.html 템플릿을 생성
     return render(request,'first.html',{'form':form})
 
+#==============================================================
+def get_news_data(breed):
+    try:
+        search_query = breed  # 여기에 검색어를 breed로 바꿔 사용하세요
+        url = f"https://search.naver.com/search.naver?where=news&sm=tab_jum&query={search_query}"
+        
+        # 네이버 뉴스 페이지에 GET 요청 보내기
+        response = requests.get(url)
+        
+        # 페이지가 성공적으로 응답했는지 확인
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            news_list = soup.select("a.news_tit")
+
+            news_data_combined = []
+            for news in news_list:
+                headline = news.text
+                link = news['href']
+                news_data_combined.append((headline, link))
+
+            return news_data_combined
+
+        else:
+            print(f"네이버 뉴스에서 데이터를 가져오지 못했습니다. 상태 코드: {response.status_code}")
+            return []
+
+    except Exception as e:
+        print(f"크롤링 중 에러 발생: {e}")
+        return []
+
+#==============================================================
 # 두번째 페이지(결과 페이지)
 def second_page(request):
 
@@ -57,7 +91,6 @@ def second_page(request):
 
     with open(json_file_path,'r',encoding='utf-8') as json_file:
         translated_classes = json.load(json_file)
-
 
     print("객체 탐지 결과 : ",detection_result)
     try:
@@ -83,17 +116,27 @@ def second_page(request):
 
     # 네이버 뉴스 헤드라인 가져오기
 
-
     # second.html 파일에서 사용할 정보 담아두는 객체
     # 품종에 대한 설명, 뉴스 등도 여기에 추가
     context = {
          'image_path':image_path,
-         'detected_class':detected_class_kor,
+         'detected_class':detected_class,
+         'detected_class_kor':detected_class_kor,
          'detected_class_description':detected_class_description,
     }
 
     return render(request,'second.html',context)
     
+#==============================================================
+# Ajax 요청 처리
+def get_news(request):
+    if request.method == 'GET' and 'breed' in request.GET:
+        breed = request.GET['breed']
+        news_data_combined = get_news_data(breed)
+        return JsonResponse({'news_data_combined': news_data_combined})
+    return JsonResponse({'error': 'Invalid request'})
+
+#==============================================================
 # 에러 페이지
 def error_page(request):
     return render(request,'error.html')
