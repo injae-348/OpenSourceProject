@@ -25,10 +25,35 @@ class CRAWLING:
 
         if breed == 'cat-Abyssinian' :
             s_input.send_keys("아비니시안 고양이")
-        elif breed == '2' :
-            s_input.send_keys("2")
+        elif breed == 'cat-Bengal' :
+            s_input.send_keys("벵갈 고양이")
+        elif breed == 'cat-Birman' :
+            s_input.send_keys("버먼 고양이")
+        elif breed == 'cat-Bombay' :
+            s_input.send_keys("봄베이 고양이")
+        elif breed == 'cat-British_Shorthair' :
+            s_input.send_keys("브리티시 쇼트헤어 고양이")
+        elif breed == 'cat-Egyptian_Mau' :
+            s_input.send_keys("이집션 마우 고양이")
         elif breed == '3' :
             s_input.send_keys("3")
+        elif breed == '3' :
+            s_input.send_keys("3")
+        elif breed == '3' :
+            s_input.send_keys("3")
+        elif breed == '3' :
+            s_input.send_keys("3")
+        elif breed == '3' :
+            s_input.send_keys("3")
+        elif breed == '3' :
+            s_input.send_keys("3")
+        elif breed == '3' :
+            s_input.send_keys("3")
+        elif breed == '3' :
+            s_input.send_keys("3")
+        elif breed == '3' :
+            s_input.send_keys("3")
+        
         else :
             print("검색할 수 없는 품종입니다.")
             return
