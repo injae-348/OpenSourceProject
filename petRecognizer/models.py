@@ -54,3 +54,10 @@ class PetBreed(models.Model):
 
     def __str__(self):
         return f"Breed : {self.breed}"
+    
+class PetNews(models.Model):
+    headline = models.CharField(max_length=200)
+    headlineUrl = models.URLField()
+
+    def __str__(self):
+        return self.headline

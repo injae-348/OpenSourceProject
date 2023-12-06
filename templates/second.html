@@ -16,16 +16,14 @@
     <!-- 품종 설명 -->
     <p>{{detected_class_description}}</p>
 
-
-
     <!-- 네이버 뉴스 헤드라인 표시 -->
-    <h3>네이버 뉴스 헤드라인 5가지!</h3>
+    <h3>{{ detected_class }}와 관련된 뉴스</h3>
     <ul>
-        <li>제목 1</li>
-        <li>제목 2</li>
-        <li>제목 3</li>
-        <li>제목 4</li>
-        <li>제목 5</li>
+        {% for headline,url in news_data_combined %}
+    <a href="{{ url }}">
+        <li>{{ headline }}</li>
+    </a>
+    {% endfor %}
     </ul>
 
     <!-- 음성 파일 재생 버튼 -->
@@ -33,7 +31,7 @@
     <h3>오디오 파일이 들어갈 곳!</h3>
 
 
-    
+
     <!-- 첫 번째 페이지로 돌아가는 버튼 -->
     <a href="{% url 'first_page' %}">처음 페이지로</a>
 </body>

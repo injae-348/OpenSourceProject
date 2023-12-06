@@ -1,3 +1,4 @@
+import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -25,8 +26,8 @@ class CRAWLING:
 
         if breed == 'cat-Abyssinian' :
             s_input.send_keys("아비니시안 고양이")
-        elif breed == '2' :
-            s_input.send_keys("2")
+        elif breed == 'dog-yorkshire_terrier' :
+            s_input.send_keys("요크셔테리어")
         elif breed == '3' :
             s_input.send_keys("3")
         else :
@@ -42,16 +43,12 @@ class CRAWLING:
         pass
     
 
-
-    
-
-
-
-
 if __name__ == "__main__":
+    breed = sys.argv[1]
     c = CRAWLING()
     c.main()
     #while True:    #반복문 사용하려면 input~~ 줄과 c.search~~줄을 while문에 맞출 것
-    input_data = input("원하는 품종을 입력해 주세요. : ")
-    c.search(input_data)
+    # input_data = input("원하는 품종을 입력해 주세요. : ")
+    # c.search(input_data)
+    c.search(breed)
 
