@@ -11,29 +11,55 @@
     <img src="{{ image_path }}" alt="Uploaded Image" width="300">
 
     <!-- 모델 결과 표시 -->
-    <h2>예측 결과 : {{ detected_class }}</h2>
+    <h2>예측 결과 : {{ detected_class_kor }}</h2>
 
     <!-- 품종 설명 -->
     <p>{{detected_class_description}}</p>
 
-    <!-- 네이버 뉴스 헤드라인 표시 -->
-    <h3>{{ detected_class }}와 관련된 뉴스</h3>
-    <ul>
-        {% for headline,url in news_data_combined %}
-    <a href="{{ url }}">
-        <li>{{ headline }}</li>
-    </a>
-    {% endfor %}
-    </ul>
+    <!-- 네이버 뉴스 헤더 -->
+    <ul id="newsList"></ul>
 
     <!-- 음성 파일 재생 버튼 -->
     <!-- 예시: 'audio' 태그를 사용하여 재생할 음성 파일의 경로를 지정하세요 -->
     <h3>오디오 파일이 들어갈 곳!</h3>
 
-
-
     <!-- 첫 번째 페이지로 돌아가는 버튼 -->
     <a href="{% url 'first_page' %}">처음 페이지로</a>
 </body>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const breed = "{{ detected_class_kor }}";
+    fetch(`/get_news/?breed=${breed}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data); // 받은 뉴스 데이터를 처리합니다. (예: DOM 업데이트)
+
+        // 뉴스 헤드라인과 링크를 표시할 요소를 가져옵니다.
+        const newsList = document.getElementById("newsList");
+
+        // 받은 데이터를 순회하며 헤드라인과 링크를 리스트로 추가합니다.
+        data.news_data_combined.forEach(item => {
+          const headline = item[0];
+          const link = item[1];
+
+          // 새로운 리스트 아이템을 생성하고 링크를 추가합니다.
+          const listItem = document.createElement("li");
+          const anchor = document.createElement("a");
+          anchor.href = link;
+          anchor.textContent = headline;
+
+          // 리스트에 아이템을 추가합니다.
+          listItem.appendChild(anchor);
+          newsList.appendChild(listItem);
+        });
+      })
+      .catch(error => {
+        console.error('에러:', error);
+      });
+  });
+</script>
+
+
 
 </html>

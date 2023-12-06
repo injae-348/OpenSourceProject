@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -105,14 +106,15 @@ class CRAWLING:
         s_input.send_keys(Keys.ENTER)
         news_titles = self.driver.find_elements(By.XPATH, "//a[@class='news_tit']")
         for index, value in enumerate(news_titles):
-            print(f"{index+1} : {value.text} [link : {value.get_attribute('href')}]")
+            print(f"{value.text} {value.get_attribute('href')}")
             if index == 4:
                 break
         pass
     
 
 if __name__ == "__main__":
-    breed = sys.argv[1]
+    # breed = sys.argv[1]
+    breed = "dog-yorkshire_terrier"
     c = CRAWLING()
     c.main()
     #while True:    #반복문 사용하려면 input~~ 줄과 c.search~~줄을 while문에 맞출 것

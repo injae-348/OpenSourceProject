@@ -1,6 +1,8 @@
 import os
 import json
 import subprocess
+import requests
+from bs4 import BeautifulSoup
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
@@ -48,30 +50,33 @@ def first_page(request):
 
 #==============================================================
 def get_news_data(breed):
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    # 네이버 뉴스 헤드라인 가져오기
     try:
-        crawling_path = os.path.join(BASE_DIR,'crawling.py')
+        search_query = breed  # 여기에 검색어를 breed로 바꿔 사용하세요
+        url = f"https://search.naver.com/search.naver?where=news&sm=tab_jum&query={search_query}"
+        
+        # 네이버 뉴스 페이지에 GET 요청 보내기
+        response = requests.get(url)
+        
+        # 페이지가 성공적으로 응답했는지 확인
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            news_list = soup.select("a.news_tit")
 
-        process = subprocess.Popen(['python',crawling_path,breed],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        stdout, stderr = process.communicate()
-        news_data = stdout.decode('utf-8')
-        news_list = news_data.split('\n')
+            news_data_combined = []
+            for news in news_list:
+                headline = news.text
+                link = news['href']
+                news_data_combined.append((headline, link))
 
-        news_data_combined=[]
-        for line in news_list:
-            if line:
-                parts = line.split(' ')
-                if len(parts) == 2:
-                    headline, url = parts
-                    news_data_combined.append((headline.strip(),url.strip()))
+            return news_data_combined
 
-        return news_data_combined
+        else:
+            print(f"네이버 뉴스에서 데이터를 가져오지 못했습니다. 상태 코드: {response.status_code}")
+            return []
 
     except Exception as e:
         print(f"크롤링 중 에러 발생: {e}")
         return []
-
 
 #==============================================================
 # 두번째 페이지(결과 페이지)
@@ -115,9 +120,9 @@ def second_page(request):
     # 품종에 대한 설명, 뉴스 등도 여기에 추가
     context = {
          'image_path':image_path,
-         'detected_class':detected_class_kor,
+         'detected_class':detected_class,
+         'detected_class_kor':detected_class_kor,
          'detected_class_description':detected_class_description,
-         'news_data_combined':news_data_combined,
     }
 
     return render(request,'second.html',context)
@@ -131,8 +136,6 @@ def get_news(request):
         return JsonResponse({'news_data_combined': news_data_combined})
     return JsonResponse({'error': 'Invalid request'})
 
-
-    
 #==============================================================
 # 에러 페이지
 def error_page(request):
