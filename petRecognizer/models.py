@@ -32,9 +32,9 @@ class PetBreed(models.Model):
         ('dog-english_setter', '르웰린'),
         ('dog-german_shorthaired', '저먼 쇼트헤어드 포인터'),
         ('dog-great_pyrenees', '그레이트 피레니즈'),
-        ('dog-havanese', '하바나'),
+        ('dog-havanese', '하바나 실크 독'),
         ('dog-japanese_chin', '제페니스 친'),
-        ('dog-keeshond', '키스혼드'),
+        ('dog-keeshond', '케이스혼트'),
         ('dog-leonberger', '레온베르거'),
         ('dog-miniature_pinscher', '미니어처 핀셔'),
         ('dog-newfoundland', '뉴펀들랜드'),
@@ -45,7 +45,7 @@ class PetBreed(models.Model):
         ('dog-scottish_terrier', '스코티시 테리어'),
         ('dog-shiba_inu', '시바 이누'),
         ('dog-staffordshire_bull_terrier', '스타포드셔 불 테리어'),
-        ('dog-wheaten_terrier', '휘튼 테리어'),
+        ('dog-wheaten_terrier', '소프트 코티드 휘튼 테리어'),
         ('dog-yorkshire_terrier', '요크셔테리어'),
     ]
 
