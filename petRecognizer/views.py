@@ -13,6 +13,10 @@ from .models import PetBreed
 
 from yolov5.detect import run
 
+from gtts import gTTS
+from django.http import FileResponse
+import io
+
 # 첫번째 페이지
 def first_page(request):
     # POST 요청시(이미지를 올리고 결과 확인 버튼을 눌렀을 때)
@@ -81,7 +85,6 @@ def get_news_data(breed):
 #==============================================================
 # 두번째 페이지(결과 페이지)
 def second_page(request):
-
     # 세션에 저장되어 있는 결과 & 이미지 경로를 가져옴
     detection_result = request.session.get('detection_result')
 
@@ -89,31 +92,48 @@ def second_page(request):
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     json_file_path = os.path.join(BASE_DIR, 'class.json')
 
-    with open(json_file_path,'r',encoding='utf-8') as json_file:
+    with open(json_file_path, 'r', encoding='utf-8') as json_file:
         translated_classes = json.load(json_file)
 
-    print("객체 탐지 결과 : ",detection_result)
+    print("객체 탐지 결과 : ", detection_result)
     try:
         # 세션에 저장되어있던 이미지 경로
         uploaded_image = detection_result['image_path']
         # 세션에 저장되어있던 클래스 영어 이름 결과
         detected_class = detection_result['detections'][0]
         # 한국어로 변경한 값
-        detected_class_kor = translated_classes.get(detected_class,"번역할 수 없는 값")
+        detected_class_kor = translated_classes.get(detected_class, "번역할 수 없는 값")
     except (KeyError, IndexError):
         # 만약 에러가 발생시 에러 페이지로 redirect(연결)
-        return redirect('error_page')   
-    
-    relative_path = uploaded_image.replace(settings.MEDIA_ROOT,'').replace('\\','/') 
-    image_path = '/'.join([settings.MEDIA_URL.rstrip('/'), relative_path.lstrip('/')])  
-    
-    # 품종에 대한 설명 만들어둔 DB에서 가져오기  
+        return redirect('error_page')
+
+    relative_path = uploaded_image.replace(settings.MEDIA_ROOT, '').replace('\\', '/')
+    image_path = '/'.join([settings.MEDIA_URL.rstrip('/'), relative_path.lstrip('/')])
+
+    # 품종에 대한 설명 만들어둔 DB에서 가져오기
     try:
         breed_object = PetBreed.objects.get(breed=detected_class)
         detected_class_description = breed_object.description
+
+    # tts를 DB에 불러와서 읽기
+        tts = gTTS(text=detected_class_description, lang='ko')
+        tts_path = os.path.join(settings.MEDIA_ROOT, 'tts_output.mp3')
+        tts.save(tts_path)
+
+    # 파일을 읽어와서 응답에 사용
+        with open(tts_path, 'rb') as audio_file:
+            audio_content = audio_file.read()
+
+    # 파일을 읽은 후에 파일을 닫아도 되기 때문에 with 블록 종료 후에 응답을 생성
+        response = FileResponse(io.BytesIO(audio_content), content_type='audio/mp3')
+        response['Content-Disposition'] = 'inline; filename=tts_output.mp3'
+    
     except PetBreed.DoesNotExist:
         detected_class_description = "설명이 없습니다."
+        tts_path = None
 
+    relative_path = uploaded_image.replace(settings.MEDIA_ROOT, '').replace('\\', '/')
+    image_path = '/'.join([settings.MEDIA_URL.rstrip('/'), relative_path.lstrip('/')])
     # 네이버 뉴스 헤드라인 가져오기
 
     # second.html 파일에서 사용할 정보 담아두는 객체
@@ -123,6 +143,7 @@ def second_page(request):
          'detected_class':detected_class,
          'detected_class_kor':detected_class_kor,
          'detected_class_description':detected_class_description,
+         'tts_path': tts_path,
     }
 
     return render(request,'second.html',context)
@@ -140,3 +161,6 @@ def get_news(request):
 # 에러 페이지
 def error_page(request):
     return render(request,'error.html')
+
+#==============================================================
+

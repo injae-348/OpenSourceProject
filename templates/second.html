@@ -2,33 +2,38 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Second Page</title>
+  <meta charset="UTF-8">
+  <title>Second Page</title>
 </head>
 
 <body>
-    <!-- 업로드 받은 사진 표시 -->
-    <img src="{{ image_path }}" alt="Uploaded Image" width="300">
+  <!-- 업로드 받은 사진 표시 -->
+  <img src="{{ image_path }}" alt="Uploaded Image" width="300">
 
-    <!-- 모델 결과 표시 -->
-    <h2>예측 결과 : {{ detected_class_kor }}</h2>
+  <!-- 모델 결과 표시 -->
+  <h2>예측 결과 : {{ detected_class_kor }}</h2>
 
-    <!-- 품종 설명 -->
-    <p>{{detected_class_description}}</p>
+  <!-- 품종 설명 -->
+  <p>{{detected_class_description}}</p>
 
-    <!-- 네이버 뉴스 헤더 -->
-    <ul id="newsList"></ul>
+  <!-- 네이버 뉴스 헤더 -->
+  <ul id="newsList"></ul>
 
-    <!-- 음성 파일 재생 버튼 -->
-    <!-- 예시: 'audio' 태그를 사용하여 재생할 음성 파일의 경로를 지정하세요 -->
-    <h3>오디오 파일이 들어갈 곳!</h3>
+  <!-- 음성 파일 재생 버튼 -->
+  <!-- 예시: 'audio' 태그를 사용하여 재생할 음성 파일의 경로를 지정하세요 -->
+  <h3>오디오 파일</h3>
+  <!-- 음성 파일 재생 버튼 -->
+  <audio controls>
+    <source src="/media/tts_output.mp3" type="audio/mp3">
+  </audio>
 
-    <!-- 첫 번째 페이지로 돌아가는 버튼 -->
-    <a href="{% url 'first_page' %}">처음 페이지로</a>
+
+  <!-- 첫 번째 페이지로 돌아가는 버튼 -->
+  <a href="{% url 'first_page' %}">처음 페이지로</a>
 </body>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
+  document.addEventListener("DOMContentLoaded", function () {
     const breed = "{{ detected_class_kor }}";
     fetch(`/get_news/?breed=${breed}`)
       .then(response => response.json())
