@@ -120,6 +120,7 @@ STATIC_URL = "static/"
 
 STATIC_DIRS = [
     BASE_DIR / 'static',
+    os.path.join(BASE_DIR, 'static'),
 ]
 
 # Default primary key field type
