@@ -1,70 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 
 <head>
   <meta charset="UTF-8">
-  <title>Second Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Page</title>
+  <!-- 부트스트랩 CDN 링크 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #newsList li a{
+      color:black;
+    }
+
+    .centered{
+      display: flex;
+      justify-content: center;
+      margin: 20px 0px; /* 원하는 만큼 여백 설정 */
+            
+    }
+  </style>
 </head>
 
 <body>
-  <!-- 업로드 받은 사진 표시 -->
-  <img src="{{ image_path }}" alt="Uploaded Image" width="300">
+  <div class="container border">
+    <div class="row">
+      <div class="col-md-6">
+      
+        <!-- 이미지 표시 -->
+        <img src="{{ image_path }}" alt="Uploaded Image" width="300" style="margin-top:2rem;">
 
-  <!-- 모델 결과 표시 -->
-  <h2>예측 결과 : {{ detected_class_kor }}</h2>
+        <!-- 모델 결과 및 품종 설명 -->
+        <h2>예측 결과 : {{ detected_class_kor }}</h2>
+        <p>{{ detected_class_description }}</p>
 
-  <!-- 품종 설명 -->
-  <p>{{detected_class_description}}</p>
+        <!-- 오디오 파일 재생 버튼 -->
+        <h3>오디오 파일</h3>
+        <audio controls>
+          <source src="/media/tts_output.mp3" type="audio/mp3">
+        </audio>
+      </div>
 
-  <!-- 네이버 뉴스 헤더 -->
-  <ul id="newsList"></ul>
+      <div class="col-md-6">
+        <!-- 네이버 뉴스 헤더 -->
+        <div class="centered">
+          <h4>관련 네이버 뉴스</h4>
+        </div>
+        <ol id="newsList"></ol>
 
-  <!-- 음성 파일 재생 버튼 -->
-  <!-- 예시: 'audio' 태그를 사용하여 재생할 음성 파일의 경로를 지정하세요 -->
-  <h3>오디오 파일</h3>
-  <!-- 음성 파일 재생 버튼 -->
-  <audio controls>
-    <source src="/media/tts_output.mp3" type="audio/mp3">
-  </audio>
+        <!-- 첫 번째 페이지로 돌아가는 버튼 -->
+        <div class="centered">
+          <a href="{% url 'first_page' %}" class="btn btn-primary float-md-end">처음 페이지로</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <!-- 부트스트랩 및 필요한 JavaScript 파일들 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const breed = "{{ detected_class_kor }}";
+      fetch(`/get_news/?breed=${breed}`)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data); // 받은 뉴스 데이터를 처리합니다. (예: DOM 업데이트)
 
-  <!-- 첫 번째 페이지로 돌아가는 버튼 -->
-  <a href="{% url 'first_page' %}">처음 페이지로</a>
-</body>
+          // 뉴스 헤드라인과 링크를 표시할 요소를 가져옵니다.
+          const newsList = document.getElementById("newsList");
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const breed = "{{ detected_class_kor }}";
-    fetch(`/get_news/?breed=${breed}`)
-      .then(response => response.json())
-      .then(data => {
-        console.log(data); // 받은 뉴스 데이터를 처리합니다. (예: DOM 업데이트)
+          // 받은 데이터를 순회하며 헤드라인과 링크를 리스트로 추가합니다.
+          data.news_data_combined.forEach(item => {
+            const headline = item[0];
+            const link = item[1];
 
-        // 뉴스 헤드라인과 링크를 표시할 요소를 가져옵니다.
-        const newsList = document.getElementById("newsList");
+            // 새로운 리스트 아이템을 생성하고 링크를 추가합니다.
+            const listItem = document.createElement("li");
+            const anchor = document.createElement("a");
+            anchor.href = link;
+            anchor.textContent = headline;
 
-        // 받은 데이터를 순회하며 헤드라인과 링크를 리스트로 추가합니다.
-        data.news_data_combined.forEach(item => {
-          const headline = item[0];
-          const link = item[1];
-
-          // 새로운 리스트 아이템을 생성하고 링크를 추가합니다.
-          const listItem = document.createElement("li");
-          const anchor = document.createElement("a");
-          anchor.href = link;
-          anchor.textContent = headline;
-
-          // 리스트에 아이템을 추가합니다.
-          listItem.appendChild(anchor);
-          newsList.appendChild(listItem);
+            // 리스트에 아이템을 추가합니다.
+            listItem.appendChild(anchor);
+            newsList.appendChild(listItem);
+          });
+        })
+        .catch(error => {
+          console.error('에러:', error);
         });
-      })
-      .catch(error => {
-        console.error('에러:', error);
-      });
-  });
-</script>
-
-
+    });
+  </script>
+</body>
 
 </html>
