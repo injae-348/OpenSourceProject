@@ -70,6 +70,7 @@ def get_news_data(breed):
             for news in news_list:
                 headline = news.text
                 link = news['href']
+
                 news_data_combined.append((headline, link))
 
             return news_data_combined
