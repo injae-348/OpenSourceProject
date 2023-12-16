@@ -53,6 +53,7 @@ def first_page(request):
     return render(request,'first.html',{'form':form})
 
 #==============================================================
+
 def get_news_data(breed):
     try:
         search_query = breed  # 여기에 검색어를 breed로 바꿔 사용하세요
@@ -82,8 +83,8 @@ def get_news_data(breed):
     except Exception as e:
         print(f"크롤링 중 에러 발생: {e}")
         return []
-
 #==============================================================
+
 # 두번째 페이지(결과 페이지)
 def second_page(request):
     # 세션에 저장되어 있는 결과 & 이미지 경로를 가져옴
@@ -148,8 +149,6 @@ def second_page(request):
     }
 
     return render(request,'second.html',context)
-    
-#==============================================================
 # Ajax 요청 처리
 def get_news(request):
     if request.method == 'GET' and 'breed' in request.GET:
@@ -157,8 +156,11 @@ def get_news(request):
         news_data_combined = get_news_data(breed)
         return JsonResponse({'news_data_combined': news_data_combined})
     return JsonResponse({'error': 'Invalid request'})
+#==============================================================
+
 
 #==============================================================
+
 # 에러 페이지
 def error_page(request):
     return render(request,'error.html')
